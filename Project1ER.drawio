@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-03-23T23:31:50.058Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="L9wg-9wsVmu8vOSRPxXK" version="24.1.0" type="github">
+<mxfile host="app.diagrams.net" modified="2024-03-23T23:32:49.580Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="RJwJf-uiNnnEK7iHp_to" version="24.1.0" type="github">
   <diagram name="Page-1" id="uOJZ_3tTdW4th-i7hOvJ">
     <mxGraphModel dx="3804" dy="1150" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -6,9 +6,6 @@
         <mxCell id="1" parent="0" />
         <mxCell id="BBo-fvt_Tt6ZGGIQ310o-14" value="Item" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-467" y="733" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-15" value="Bid" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="-414" y="435" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="BBo-fvt_Tt6ZGGIQ310o-16" value="Auction" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="350" y="260" width="120" height="60" as="geometry" />
@@ -121,34 +118,34 @@
             <mxPoint x="-567" y="703" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-46" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-15" target="BBo-fvt_Tt6ZGGIQ310o-25" edge="1">
+        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-46" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" target="BBo-fvt_Tt6ZGGIQ310o-25" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="-474" y="545" as="sourcePoint" />
+            <mxPoint x="-414" y="465" as="sourcePoint" />
             <mxPoint x="-424" y="495" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-47" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-27" target="BBo-fvt_Tt6ZGGIQ310o-15" edge="1">
+        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-47" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-27" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-454" y="575" as="sourcePoint" />
-            <mxPoint x="-404" y="525" as="targetPoint" />
+            <mxPoint x="-414" y="465" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-48" value="" style="endArrow=none;html=1;rounded=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-22" target="BBo-fvt_Tt6ZGGIQ310o-15" edge="1">
+        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-48" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-22" target="frw_D5HhV09Jrf7qXdkJ-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-434" y="489" as="sourcePoint" />
-            <mxPoint x="-404" y="475" as="targetPoint" />
+            <mxPoint x="-384" y="435" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-49" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-24" target="BBo-fvt_Tt6ZGGIQ310o-15" edge="1">
+        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-49" value="" style="endArrow=none;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-24" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-399" y="435" as="sourcePoint" />
-            <mxPoint x="-374" y="445" as="targetPoint" />
+            <mxPoint x="-354" y="435" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-50" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-26" target="BBo-fvt_Tt6ZGGIQ310o-15" edge="1">
+        <mxCell id="BBo-fvt_Tt6ZGGIQ310o-50" value="" style="endArrow=none;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="BBo-fvt_Tt6ZGGIQ310o-26" target="frw_D5HhV09Jrf7qXdkJ-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-319" y="435" as="sourcePoint" />
-            <mxPoint x="-344" y="445" as="targetPoint" />
+            <mxPoint x="-294" y="435" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="BBo-fvt_Tt6ZGGIQ310o-51" value="Status" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -387,6 +384,12 @@
         </mxCell>
         <mxCell id="frw_D5HhV09Jrf7qXdkJ-3" value="&lt;b&gt;ITEM&lt;/b&gt;(ItemID:int, SellerID:int, WinnerID:int, Title:varchar(256&lt;span style=&quot;background-color: initial;&quot;&gt;),&amp;nbsp;&lt;/span&gt;Desc:varchar(256&lt;span style=&quot;background-color: initial;&quot;&gt;), &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;Start:date, End:date, MinPrice:float,&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;PRIMARY KEY(ItemID),&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;FOREIGN KEY(SelllerID) REFERENCES USER)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="-537.5" y="612" width="450.5" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="frw_D5HhV09Jrf7qXdkJ-5" value="Relationship" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="364" y="356" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="frw_D5HhV09Jrf7qXdkJ-6" value="Bid" style="shape=rhombus;perimeter=rhombusPerimeter;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-417" y="435" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
