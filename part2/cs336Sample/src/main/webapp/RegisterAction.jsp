@@ -1,18 +1,18 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="javax.servlet.*" %>
 <%@ page import="javax.servlet.http.*" %>
+<%@ page import="com.cs336.pkg.ApplicationDB" %>
 
 <%
 // Initialization of variables
 String username = request.getParameter("username");
 String password = request.getParameter("password");
-String dbURL = "jdbc:mysql://localhost:3306/FinalProject";
-String dbUser = "root";
-String dbPass = "openoct19";
 boolean userExists = false;
 
+ApplicationDB db = new ApplicationDB();
+
 // Try-with-resources to auto close resources
-try (Connection conn = DriverManager.getConnection(dbURL, dbUser, dbPass);
+try (Connection conn = db.getConnection();
      PreparedStatement checkUser = conn.prepareStatement("SELECT username FROM users WHERE username = ?");
      PreparedStatement insertUser = conn.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)")) {
 
