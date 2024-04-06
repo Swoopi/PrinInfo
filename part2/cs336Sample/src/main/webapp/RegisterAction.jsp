@@ -34,7 +34,7 @@ try (Connection conn = db.getConnection();
             // Registration successful
             out.println("<h2>Registration successful!</h2>");
             // Redirect or link to login page
-            response.setHeader("Refresh", "5; URL=HelloWorld.jsp");
+            response.setHeader("Refresh", "5; URL=Landing.jsp");
             out.println("<p>You will be redirected to the login page in 5 seconds.</p>");
             out.println("<p>Click <a href='login.jsp'>here</a> if you are not redirected.</p>");
         } else {
