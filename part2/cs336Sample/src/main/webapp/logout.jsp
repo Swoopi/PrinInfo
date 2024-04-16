@@ -2,5 +2,5 @@
 
 <%
 session.invalidate();
-response.sendRedirect("Landing.jsp"); // Redirect to the login page
+response.sendRedirect("landing.jsp"); // Redirect to the login page
 %>

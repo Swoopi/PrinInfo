@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("welcome.jsp"); // Redirect to another page on success
             } else {
                 out.println("Invalid username or password");
-                response.sendRedirect("Landing.jsp"); // Redirect back to the login page on failure
+                response.sendRedirect("landing.jsp"); // Redirect back to the login page on failure
             }
         } catch (Exception e) {
             e.printStackTrace();
