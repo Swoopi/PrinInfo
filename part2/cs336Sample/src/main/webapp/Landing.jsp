@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1" import="com.cs336.pkg.*"%>
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="com.cs336.dao.*, com.cs336.servlet.*, com.cs336.utils.*"%>
 <%@ page import="java.io.*,java.util.*,java.sql.*"%>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 
@@ -13,7 +14,7 @@
 	
 	<body>
 
-		<form action="loginAction.jsp" method="post">
+		<form action="LoginServlet" method="post">
 			Username: <input type="text" name="username"><br>
 			Password: <input type="password" name="password"><br>
 			<input type="submit" value="Login">

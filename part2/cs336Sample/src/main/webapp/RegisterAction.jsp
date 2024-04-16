@@ -1,7 +1,7 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="javax.servlet.*" %>
 <%@ page import="javax.servlet.http.*" %>
-<%@ page import="com.cs336.pkg.ApplicationDB" %>
+<%@ page import="com.cs336.dao.ApplicationDB" %>
 
 <%
 // Initialization of variables
