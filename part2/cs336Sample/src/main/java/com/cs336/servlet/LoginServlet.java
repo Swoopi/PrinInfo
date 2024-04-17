@@ -1,6 +1,7 @@
 package com.cs336.servlet;
 
 import com.cs336.dao.ApplicationDB;
+import com.cs336.utils.SessionManager; // Make sure to import the SessionManager
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,7 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 HttpSession session = request.getSession();
-                session.setAttribute("user", username);
+                SessionManager.logInUser(session, username); // Using SessionManager to handle session
                 response.sendRedirect("welcome.jsp"); // Redirect to another page on success
             } else {
                 out.println("Invalid username or password");
