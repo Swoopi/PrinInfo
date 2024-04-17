@@ -1,7 +1,7 @@
 package com.cs336.servlet;
 
 import com.cs336.dao.ApplicationDB;
-import com.cs336.utils.SessionManager; // Make sure to import the SessionManager
+import com.cs336.utils.SessionManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,23 +28,31 @@ public class LoginServlet extends HttpServlet {
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
-                    "SELECT * FROM users WHERE username=? AND password=?");
+                    "SELECT userid, password FROM users WHERE username=?");
             ps.setString(1, username);
-            ps.setString(2, password);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                HttpSession session = request.getSession();
-                SessionManager.logInUser(session, username); // Using SessionManager to handle session
-                response.sendRedirect("welcome.jsp"); // Redirect to another page on success
+                String storedPassword = rs.getString("password");
+                int userId = rs.getInt("userid");
+                
+                if (password.equals(storedPassword)) { 
+                    HttpSession session = request.getSession();
+                    SessionManager.logInUser(session, username, userId);
+                    response.sendRedirect("welcome.jsp");
+                } else {
+                    out.println("Invalid username or password");
+                    response.sendRedirect("landing.jsp"); // Better to use forward with error message
+                }
             } else {
-                out.println("Invalid username or password");
-                response.sendRedirect("landing.jsp"); // Redirect back to the login page on failure
+                out.println("Username does not exist");
+                response.sendRedirect("landing.jsp"); // Better to use forward with error message
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Optionally, redirect to a custom error page
             response.sendRedirect("error.jsp");
+        } finally {
+            out.close();
         }
     }
 }

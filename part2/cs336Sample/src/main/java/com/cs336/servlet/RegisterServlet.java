@@ -44,7 +44,7 @@ public class RegisterServlet extends HttpServlet {
                     out.println("<h2>Registration successful!</h2>");
                     response.setHeader("Refresh", "5; URL=landing.jsp");
                     out.println("<p>You will be redirected to the login page in 5 seconds.</p>");
-                    out.println("<p>Click <a href='login.jsp'>here</a> if you are not redirected.</p>");
+                    out.println("<p>Click <a href='landing.jsp'>here</a> if you are not redirected.</p>");
                 } else {
                     out.println("<h2>Registration failed. Please try again.</h2>");
                     response.setHeader("Refresh", "5; URL=register.jsp");

@@ -16,9 +16,20 @@
             out.println("<form action='LogoutServlet' method='get'>");
             out.println("<input type='submit' value='Logout'>");
             out.println("</form>");
+    %>
+            <!-- Buy and Sell Buttons -->
+            <div>
+                <form action="viewItems.jsp" method="get">
+                    <input type="submit" value="Buy Items">
+                </form>
+                <form action="ListItem.jsp" method="get">
+                    <input type="submit" value="Sell Items">
+                </form>
+            </div>
+    <%
         } else {
             // User is not logged in or session has expired
-            response.sendRedirect("login.jsp"); // Redirect to login page
+            response.sendRedirect("landing.jsp"); // Redirect to login page
         }
     %>
     <%-- Include the navigation bar --%>
