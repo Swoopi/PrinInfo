@@ -19,11 +19,14 @@
     %>
             <!-- Buy and Sell Buttons -->
             <div>
-                <form action="viewItems.jsp" method="get">
+                <form action="ViewItemsServlet" method="get">
                     <input type="submit" value="Buy Items">
                 </form>
                 <form action="ListItem.jsp" method="get">
                     <input type="submit" value="Sell Items">
+                </form>
+                <form action="CurrentItemsServlet" method="get">
+                    <input type="submit" value="See personal Active Items">
                 </form>
             </div>
     <%

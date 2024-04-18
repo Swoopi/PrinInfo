@@ -1,7 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="java.sql.SQLException" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="com.cs336.dao.Item" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,29 +11,27 @@
     <table border="1">
         <tr>
             <th>Title</th>
-            <th>Description</th>
             <th>Starting Price</th>
-            <th>Bid Increment</th>
-            <th>Minimum Price</th>
             <th>Closing Time</th>
         </tr>
         <%
-            ResultSet items = (ResultSet) request.getAttribute("items");
-            try {
-                while (items != null && items.next()) {
+            List<Item> items = (List<Item>) request.getAttribute("items");
+            if (items != null && !items.isEmpty()) {
+                for (Item item : items) {
                     %>
                     <tr>
-                        <td><%= items.getString("title") %></td>
-                        <td><%= items.getString("description") %></td>
-                        <td><%= items.getDouble("starting_price") %></td>
-                        <td><%= items.getDouble("bid_increment") %></td>
-                        <td><%= items.getDouble("minimum_price") %></td>
-                        <td><%= items.getTimestamp("closing_time").toString() %></td>
+                        <td><%= item.getTitle() %></td>
+                        <td><%= item.getStartingPrice() %></td>
+                        <td><%= item.getClosingTime().toString() %></td>
                     </tr>
                     <%
                 }
-            } catch (SQLException e) {
-                out.println("Error retrieving data: " + e.getMessage());
+            } else {
+                %>
+                <tr>
+                    <td colspan="3">No items found.</td>
+                </tr>
+                <%
             }
         %>
     </table>

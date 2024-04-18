@@ -24,7 +24,29 @@ public class ItemDAO {
                 items.add(item);
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Better handling/logging recommended
+            e.printStackTrace();  // Consider logging this error or throwing a custom exception
+        }
+        return items;
+    }
+    
+
+    public List<Item> getItemsByUserId(int userId) {
+    	System.out.println("Querying items for user ID: " + userId);
+        List<Item> items = new ArrayList<>();
+        String sql = "SELECT * FROM items WHERE seller_id = ? AND closing_time > NOW()";
+        try (Connection con = db.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String title = rs.getString("title");
+                    double startingPrice = rs.getDouble("starting_price");
+                    Timestamp closingTime = rs.getTimestamp("closing_time");
+                    items.add(new Item(title, startingPrice, closingTime));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();  // Consider logging this error or throwing a custom exception
         }
         return items;
     }

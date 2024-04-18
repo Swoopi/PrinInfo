@@ -28,12 +28,10 @@ public class ListItemServlet extends HttpServlet {
         Timestamp closingTime = null;
 
         try {
-            // Parse the string into a proper Timestamp object, assuming the parameter includes AM or PM
             Date parsedDate = dateFormat.parse(request.getParameter("closingTime"));
             closingTime = new Timestamp(parsedDate.getTime());
 
         } catch (ParseException e) {
-            // Handle the parse exception by setting an error message and forwarding to an error page
             request.setAttribute("errorMessage", "Error parsing the closing time. Please use the correct format, including AM or PM.");
             request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
             return;
@@ -41,7 +39,8 @@ public class ListItemServlet extends HttpServlet {
 
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
-            String query = "INSERT INTO Items (seller_id, title, description, starting_price, bid_increment, minimum_price, closing_time) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Items (seller_id, title, description, starting_price, bid_increment, minimum_price, closing_time, status, starting_time) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', NOW())";
             PreparedStatement ps = con.prepareStatement(query);
 
             HttpSession session = request.getSession();
@@ -60,7 +59,7 @@ public class ListItemServlet extends HttpServlet {
             ps.setTimestamp(7, closingTime);
             ps.executeUpdate();
 
-            response.sendRedirect("currentItems.jsp");
+            response.sendRedirect("CurrentItemsServlet");
         } catch (SQLException e) {
             throw new ServletException("Database error", e);
         }

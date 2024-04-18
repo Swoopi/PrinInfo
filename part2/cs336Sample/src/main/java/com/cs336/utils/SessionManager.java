@@ -12,6 +12,7 @@ public class SessionManager {
         if (session != null) {
             session.setAttribute("user", username);
             session.setAttribute("userID", userId);  // Storing the userID in session
+            System.out.println("Logged in user: " + username + " with userID: " + userId);
         }
     }
 
@@ -26,6 +27,10 @@ public class SessionManager {
     }
 
     public static Integer getLoggedInUserID(HttpSession session) {
-        return (session != null) ? (Integer) session.getAttribute("userID") : null;
+        Integer userID = (session != null) ? (Integer) session.getAttribute("userID") : null;
+        System.out.println("Retrieved user ID from session: " + userID);
+        return userID;
+
     }
+    
 }
