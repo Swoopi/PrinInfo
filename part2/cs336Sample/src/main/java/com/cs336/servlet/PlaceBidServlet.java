@@ -22,20 +22,21 @@ public class PlaceBidServlet extends HttpServlet {
         }
 
         try (Connection con = new ApplicationDB().getConnection()) {
-            String validationQuery = "SELECT minimum_price, (current_bid IS NULL OR current_bid < ?) AS can_bid FROM items WHERE item_id = ?";
+            // Fetch current bid and bid increment to validate against new bid
+            String validationQuery = "SELECT current_bid, bid_increment FROM items WHERE item_id = ?";
             PreparedStatement validationStmt = con.prepareStatement(validationQuery);
-            validationStmt.setDouble(1, bidAmount);
-            validationStmt.setInt(2, itemId);
+            validationStmt.setInt(1, itemId);
             ResultSet rs = validationStmt.executeQuery();
-            
-            boolean canPlaceBid = false;
-            double minimumPrice = 0.0;
+
+            double currentBid = 0.0;
+            double bidIncrement = 0.0;
             if (rs.next()) {
-                canPlaceBid = rs.getBoolean("can_bid");
-                minimumPrice = rs.getDouble("minimum_price");
+                currentBid = rs.getDouble("current_bid");
+                bidIncrement = rs.getDouble("bid_increment");
             }
 
-            if (canPlaceBid && bidAmount >= minimumPrice) {
+            // Check if new bid is at least current bid plus increment
+            if (bidAmount >= (currentBid + bidIncrement)) {
                 String updateQuery = "UPDATE items SET current_bid = ?, current_bid_user_id = ? WHERE item_id = ?";
                 PreparedStatement updateStmt = con.prepareStatement(updateQuery);
                 updateStmt.setDouble(1, bidAmount);
@@ -49,7 +50,8 @@ public class PlaceBidServlet extends HttpServlet {
                     session.setAttribute("error", "No changes made, please try again.");
                 }
             } else {
-                session.setAttribute("error", "Bid too low or does not meet the minimum price of $" + minimumPrice);
+                // If the bid does not meet the required increment
+                session.setAttribute("error", "Bid too low. It must be at least $" + (currentBid + bidIncrement) + ".");
             }
             response.sendRedirect("ViewItemsServlet");
         } catch (SQLException e) {
