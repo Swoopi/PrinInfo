@@ -15,4 +15,5 @@ public class ViewItemsServlet extends HttpServlet {
         RequestDispatcher dispatcher = request.getRequestDispatcher("viewItems.jsp");
         dispatcher.forward(request, response);
     }
+    
 }

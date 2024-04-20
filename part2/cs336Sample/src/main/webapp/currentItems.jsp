@@ -23,6 +23,8 @@
                         <td><%= item.getTitle() %></td>
                         <td><%= item.getStartingPrice() %></td>
                         <td><%= item.getClosingTime().toString() %></td>
+                        
+                        
                     </tr>
                     <%
                 }

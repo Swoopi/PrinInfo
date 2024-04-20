@@ -13,13 +13,20 @@ public class ItemDAO {
 
     public List<Item> getActiveItems() {
         List<Item> items = new ArrayList<>();
-        String query = "SELECT * FROM Items WHERE closing_time > NOW()";
-        try (Connection con = db.getConnection(); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        String query = "SELECT item_id, seller_id, title, description, starting_price, current_bid, current_bid_user_id, starting_time, closing_time, status FROM Items WHERE closing_time > NOW()";
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Item item = new Item(
+                    rs.getInt("item_id"),
+                    rs.getInt("seller_id"),
                     rs.getString("title"),
+                    rs.getString("description"),
                     rs.getDouble("starting_price"),
-                    rs.getTimestamp("closing_time")
+                    rs.getDouble("current_bid"),
+                    rs.getInt("current_bid_user_id"),
+                    rs.getTimestamp("starting_time"),
+                    rs.getTimestamp("closing_time"),
+                    rs.getString("status")
                 );
                 items.add(item);
             }
@@ -28,6 +35,8 @@ public class ItemDAO {
         }
         return items;
     }
+
+
     
 
     public List<Item> getItemsByUserId(int userId) {

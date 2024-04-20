@@ -8,6 +8,7 @@ public class Item {
     private String title;
     private String description; // To store a detailed description of the item.
     private double startingPrice;
+    private double bidIncrement;  
     private double currentBid;
     private int currentBidUserId;
     private Timestamp startingTime; // To track when the auction starts.
@@ -114,5 +115,12 @@ public class Item {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public double getBidIncrement() {
+        return bidIncrement;
+    }
+
+    public void setBidIncrement(double bidIncrement) {
+        this.bidIncrement = bidIncrement;
     }
 }
