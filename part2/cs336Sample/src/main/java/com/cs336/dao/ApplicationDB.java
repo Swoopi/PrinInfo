@@ -17,7 +17,7 @@ public class ApplicationDB {
         try {
             // This assumes you have the MySQL connector JAR in your classpath
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            connection = DriverManager.getConnection(connectionUrl, "root", "openoct19");
+            connection = DriverManager.getConnection(connectionUrl, "root", "root-password");
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
