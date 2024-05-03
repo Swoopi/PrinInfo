@@ -22,7 +22,7 @@ public class ListItemServlet extends HttpServlet {
         double startingPrice = Double.parseDouble(request.getParameter("startingPrice"));
         double bidIncrement = Double.parseDouble(request.getParameter("bidIncrement"));
         double minimumPrice = Double.parseDouble(request.getParameter("minimumPrice"));
-
+        
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
         Timestamp closingTime = null;
@@ -39,7 +39,7 @@ public class ListItemServlet extends HttpServlet {
 
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
-            String query = "INSERT INTO Items (seller_id, title, description, starting_price, bid_increment, minimum_price, closing_time, status, starting_time) "
+            String query = "INSERT INTO Auctions (sellerID, title, description, starting_price, bid_increment, minimum_price, closing_time, auction_status, starting_time) "
             		+ "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', NOW())";
             PreparedStatement ps = con.prepareStatement(query);
 
@@ -50,6 +50,7 @@ public class ListItemServlet extends HttpServlet {
                 return;
             }
 
+           
             ps.setInt(1, userID);
             ps.setString(2, title);
             ps.setString(3, description);

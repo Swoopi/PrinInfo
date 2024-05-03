@@ -42,7 +42,7 @@ public class ItemDAO {
     public List<Item> getItemsByUserId(int userId) {
     	System.out.println("Querying items for user ID: " + userId);
         List<Item> items = new ArrayList<>();
-        String sql = "SELECT * FROM items WHERE seller_id = ? AND closing_time > NOW()";
+        String sql = "SELECT * FROM Auctions WHERE seller_id = ? AND closing_time > NOW()";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
