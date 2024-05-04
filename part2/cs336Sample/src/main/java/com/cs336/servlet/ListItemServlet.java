@@ -39,7 +39,7 @@ public class ListItemServlet extends HttpServlet {
 
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
-            String query = "INSERT INTO Auctions (sellerID, title, description, starting_price, bid_increment, minimum_price, closing_time, auction_status, starting_time) "
+            String query = "INSERT INTO Auctions (sellerID, title, description, starting_price, bid_increment, minimum_price, closing_time, status, starting_time) "
             		+ "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', NOW())";
             PreparedStatement ps = con.prepareStatement(query);
 
