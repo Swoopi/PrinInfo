@@ -12,6 +12,9 @@ public class PlaceBidServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int auctionId = Integer.parseInt(request.getParameter("auctionId"));
+        String bidType = request.getParameter("bidType");
+        double autoInc = Double.parseDouble(request.getParameter("incAmount"));
+        double autoLimit = Double.parseDouble(request.getParameter("autoLimit"));
         double bidAmount = Double.parseDouble(request.getParameter("bidAmount"));
 
         HttpSession session = request.getSession();
@@ -37,13 +40,16 @@ public class PlaceBidServlet extends HttpServlet {
 
             // Check if new bid is at least current bid plus increment
             if (bidAmount >= (currentBid + bidIncrement)) {
-                String updateQuery = "INSERT INTO Bids (auctionID, userID, bid_amount, bid_type, post_time)"
-                + "VALUES (?, ?, ?, 'MANUAL', NOW())"; 
+                String updateQuery = "INSERT INTO Bids (auctionID, userID, bid_amount, bid_type, bid_increment, bid_limit, post_time)"
+                + "VALUES (?, ?, ?, ?, ?, ?, NOW() )"; 
                 PreparedStatement updateStmt = con.prepareStatement(updateQuery);
                 
                 updateStmt.setInt(1, auctionId);
                 updateStmt.setInt(2, userID);
                 updateStmt.setDouble(3, bidAmount);
+                updateStmt.setString(4, bidType);
+                updateStmt.setDouble(5, autoInc);
+                updateStmt.setDouble(6, autoLimit);
                 updateStmt.executeUpdate();
 
             } else {
