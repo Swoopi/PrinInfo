@@ -34,6 +34,14 @@
                 <!-- Updated form action to submit to PlaceBidServlet -->
                 <form action="PlaceBidServlet" method="post">
                     <input type="hidden" name="auctionId" value="<%= auction.getAuctionId() %>">
+                    <select name="Bid Type">
+                    	<option>MANUAL</option>
+                    	<option>AUTOMATIC</option>
+                    </select>
+                    <input type="number" name="incAmount" min="0.00" step="0.01" required>
+                    <input type="submit" value="Set Auto-Bid">
+                    <input type="number" name="autoLimit" min="0.00" step="0.01" required>
+                    <input type="submit" value="Set Auto-Bid Limit">
                     <input type="number" name="bidAmount" min="<%= auction.getCurrentBid() + auction.getBidIncrement() %>" step="0.01" required>
                     <input type="submit" value="Place Bid">
                 </form>
