@@ -13,12 +13,12 @@ public class ItemDAO {
 
     public List<Item> getActiveItems() {
         List<Item> items = new ArrayList<>();
-        String query = "SELECT item_id, seller_id, title, description, starting_price, current_bid, current_bid_user_id, starting_time, closing_time, status FROM Items WHERE closing_time > NOW()";
+        String query = "SELECT itemID, sellerID, title, description, starting_price, current_bid, current_bid_user_id, starting_time, closing_time, status FROM Items WHERE closing_time > NOW()";
         try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Item item = new Item(
-                    rs.getInt("item_id"),
-                    rs.getInt("seller_id"),
+                    rs.getInt("itemID"),
+                    rs.getInt("sellerID"),
                     rs.getString("title"),
                     rs.getString("description"),
                     rs.getDouble("starting_price"),
@@ -42,7 +42,7 @@ public class ItemDAO {
     public List<Item> getItemsByUserId(int userId) {
     	System.out.println("Querying items for user ID: " + userId);
         List<Item> items = new ArrayList<>();
-        String sql = "SELECT * FROM Auctions WHERE seller_id = ? AND closing_time > NOW()";
+        String sql = "SELECT * FROM Auctions WHERE sellerID = ? AND closing_time > NOW()";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
