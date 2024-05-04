@@ -11,7 +11,7 @@ import java.sql.*;
 public class PlaceBidServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
+        int auctionId = Integer.parseInt(request.getParameter("auctionId"));
         double bidAmount = Double.parseDouble(request.getParameter("bidAmount"));
 
         HttpSession session = request.getSession();
@@ -23,9 +23,9 @@ public class PlaceBidServlet extends HttpServlet {
 
         try (Connection con = new ApplicationDB().getConnection()) {
             // Fetch current bid and bid increment to validate against new bid
-            String validationQuery = "SELECT current_bid, bid_increment FROM items WHERE item_id = ?";
+            String validationQuery = "SELECT current_bid, bid_increment FROM Auctions WHERE auctionID = ?";
             PreparedStatement validationStmt = con.prepareStatement(validationQuery);
-            validationStmt.setInt(1, itemId);
+            validationStmt.setInt(1, auctionId);
             ResultSet rs = validationStmt.executeQuery();
 
             double currentBid = 0.0;
@@ -37,18 +37,15 @@ public class PlaceBidServlet extends HttpServlet {
 
             // Check if new bid is at least current bid plus increment
             if (bidAmount >= (currentBid + bidIncrement)) {
-                String updateQuery = "UPDATE items SET current_bid = ?, current_bid_user_id = ? WHERE item_id = ?";
+                String updateQuery = "INSERT INTO Bids (auctionID, userID, bid_amount, bid_type, post_time)"
+                + "VALUES (?, ?, ?, 'MANUAL', NOW())"; 
                 PreparedStatement updateStmt = con.prepareStatement(updateQuery);
-                updateStmt.setDouble(1, bidAmount);
+                
+                updateStmt.setInt(1, auctionId);
                 updateStmt.setInt(2, userID);
-                updateStmt.setInt(3, itemId);
-                int affectedRows = updateStmt.executeUpdate();
+                updateStmt.setDouble(3, bidAmount);
+                updateStmt.executeUpdate();
 
-                if (affectedRows > 0) {
-                    session.setAttribute("message", "Bid successfully placed!");
-                } else {
-                    session.setAttribute("error", "No changes made, please try again.");
-                }
             } else {
                 // If the bid does not meet the required increment
                 session.setAttribute("error", "Bid too low. It must be at least $" + (currentBid + bidIncrement) + ".");

@@ -1,5 +1,5 @@
 <%@ page import="java.util.List" %>
-<%@ page import="com.cs336.dao.Item" %>
+<%@ page import="com.cs336.dao.Auction" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -22,19 +22,19 @@
 <body>
     <h1>Active Auctions</h1>
     <%
-        List<Item> items = (List<Item>)request.getAttribute("items");
-        if (items != null && !items.isEmpty()) {
-            for (Item item : items) {
+        List<Auction> auctions = (List<Auction>)request.getAttribute("auctions");
+        if (auctions != null && !auctions.isEmpty()) {
+            for (Auction auction : auctions) {
     %>
                 <p>
-                    <%= item.getTitle() %> - Current bid: $<%= item.getCurrentBid() %> 
-                    - Starting Price: $<%= item.getStartingPrice() %> 
-                    - Closes on: <%= item.getClosingTime() %>
+                    <%= auction.getTitle() %> - Current bid: $<%= auction.getCurrentBid() %> 
+                    - Starting Price: $<%= auction.getStartingPrice() %> 
+                    - Closes on: <%= auction.getClosingTime() %>
                 </p>
                 <!-- Updated form action to submit to PlaceBidServlet -->
                 <form action="PlaceBidServlet" method="post">
-                    <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
-                    <input type="number" name="bidAmount" min="<%= item.getCurrentBid() + item.getBidIncrement() %>" step="0.01" required>
+                    <input type="hidden" name="auctionId" value="<%= auction.getAuctionId() %>">
+                    <input type="number" name="bidAmount" min="<%= auction.getCurrentBid() + auction.getBidIncrement() %>" step="0.01" required>
                     <input type="submit" value="Place Bid">
                 </form>
 

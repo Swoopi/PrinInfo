@@ -4,20 +4,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemDAO {
+public class AuctionDAO {
     private ApplicationDB db;
 
-    public ItemDAO() {
+    public AuctionDAO() {
         this.db = new ApplicationDB();
     }
 
-    public List<Item> getActiveItems() {
-        List<Item> items = new ArrayList<>();
-        String query = "SELECT itemID, sellerID, title, description, starting_price, current_bid, current_bid_userID, starting_time, closing_time, auction_status FROM Auctions WHERE closing_time > NOW()";
+    public List<Auction> getActiveAuctions() {
+        List<Auction> auctions = new ArrayList<>();
+        String query = "SELECT auctionID, itemID, sellerID, title, description, starting_price, current_bid, current_bid_userID, starting_time, closing_time, auction_status FROM Auctions WHERE closing_time > NOW()";
         try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Item item = new Item(
-                    rs.getInt("itemID"),
+                Auction auction= new Auction(
+                	rs.getInt("auctionID"),
+                	rs.getInt("itemID"),
                     rs.getInt("sellerID"),
                     rs.getString("title"),
                     rs.getString("description"),
@@ -28,17 +29,17 @@ public class ItemDAO {
                     rs.getTimestamp("closing_time"),
                     rs.getString("auction_status")
                 );
-                items.add(item);
+                auctions.add(auction);
             }
         } catch (SQLException e) {
             e.printStackTrace();  // Consider logging this error or throwing a custom exception
         }
-        return items;
+        return auctions;
     }
 
 
     
-
+/*
     public List<Item> getItemsByUserId(int userId) {
     	System.out.println("Querying items for user ID: " + userId);
         List<Item> items = new ArrayList<>();
@@ -59,4 +60,5 @@ public class ItemDAO {
         }
         return items;
     }
+    */
 }
