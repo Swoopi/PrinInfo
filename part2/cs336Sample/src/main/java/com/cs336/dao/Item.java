@@ -1,7 +1,10 @@
 package com.cs336.dao;
 
 import java.sql.Timestamp;
-
+import com.cs336.dao.ApplicationDB;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 public class Item {
     private int itemId;
     private int sellerId;  // Seller ID field
@@ -122,5 +125,13 @@ public class Item {
 
     public void setBidIncrement(double bidIncrement) {
         this.bidIncrement = bidIncrement;
+    }
+    public static void removeAuction(int itemId) throws SQLException {
+        String sql = "UPDATE items SET status = 'removed' WHERE item_id = ?";
+        try (Connection con = new ApplicationDB().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            ps.executeUpdate();
+        }
     }
 }

@@ -37,12 +37,13 @@ public class PlaceBidServlet extends HttpServlet {
 
             // Check if new bid is at least current bid plus increment
             if (bidAmount >= (currentBid + bidIncrement)) {
-                String updateQuery = "UPDATE items SET current_bid = ?, current_bid_user_id = ? WHERE item_id = ?";
-                PreparedStatement updateStmt = con.prepareStatement(updateQuery);
-                updateStmt.setDouble(1, bidAmount);
-                updateStmt.setInt(2, userID);
-                updateStmt.setInt(3, itemId);
-                int affectedRows = updateStmt.executeUpdate();
+                // Insert bid into bids table
+                String insertBidQuery = "INSERT INTO bids (item_id, user_id, bid_amount) VALUES (?, ?, ?)";
+                PreparedStatement insertBidStmt = con.prepareStatement(insertBidQuery);
+                insertBidStmt.setInt(1, itemId);
+                insertBidStmt.setInt(2, userID);
+                insertBidStmt.setDouble(3, bidAmount);
+                int affectedRows = insertBidStmt.executeUpdate();
 
                 if (affectedRows > 0) {
                     session.setAttribute("message", "Bid successfully placed!");
