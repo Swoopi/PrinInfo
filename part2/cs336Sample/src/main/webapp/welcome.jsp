@@ -8,7 +8,7 @@
 </head>
 <body>
     <%
-        String user = (String) session.getAttribute("user");
+        String user = (String) session.getAttribute("username");
         if (user != null && !user.trim().isEmpty()) {
             out.println("<h1>Welcome, " + user + "!</h1>");
             out.println("<p>You are logged in.</p>");
