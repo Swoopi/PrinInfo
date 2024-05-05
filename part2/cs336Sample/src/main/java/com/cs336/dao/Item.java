@@ -14,6 +14,8 @@ public class Item {
     private Timestamp startingTime; // To track when the auction starts.
     private Timestamp closingTime;
     private String status; // To track the status of the item, such as active, sold, etc.
+    private String[] features;
+    private String[] featureVaklues;
 
     // Constructor for basic item creation
     public Item(String title, double startingPrice, Timestamp closingTime) {

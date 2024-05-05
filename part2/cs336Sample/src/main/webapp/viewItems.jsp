@@ -34,7 +34,7 @@
                 <!-- Updated form action to submit to PlaceBidServlet -->
                 <form action="PlaceBidServlet" method="post">
                     <input type="hidden" name="auctionId" value="<%= auction.getAuctionId() %>">
-                    Bd Type:<select name="bidType">
+                    Bid Type:<select name="bidType">
                     	<option>MANUAL</option>
                     	<option>AUTOMATIC</option>
                     </select>

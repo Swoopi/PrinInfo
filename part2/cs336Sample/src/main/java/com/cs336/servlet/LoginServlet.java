@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
             PreparedStatement ps = con.prepareStatement(
-                    "SELECT userid, password FROM users WHERE username=?");
+                    "SELECT userid, password FROM Users WHERE username=?");
             ps.setString(1, username);
 
             ResultSet rs = ps.executeQuery();
