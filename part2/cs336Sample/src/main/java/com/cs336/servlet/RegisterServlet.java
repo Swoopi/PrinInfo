@@ -21,7 +21,7 @@ public class RegisterServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         String username = request.getParameter("username");
-        String password = request.getParameter("password"); // Remember to hash and salt passwords in real applications
+        String password = request.getParameter("password");
         boolean userExists = false;
 
         ApplicationDB db = new ApplicationDB();
@@ -60,7 +60,6 @@ public class RegisterServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             out.println("<h2>Error during the registration process.</h2>");
-            // Optional: Redirect to an error page
         }
     }
 }

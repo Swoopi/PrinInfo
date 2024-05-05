@@ -13,9 +13,12 @@
 <body>
     <h2>Register</h2>
     <form action="RegisterServlet" method="post">
-        Username: <input type="text" name="username" required><br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="Create Account">
+    Username: <input type="text" name="username" required><br>
+    Password: <input type="password" name="password" required><br>
+    <input type="hidden" name="role" value="customer_rep">
+    <input type="submit" value="Create Account">
+</form>
+
     </form>
 </body>
 </html>
