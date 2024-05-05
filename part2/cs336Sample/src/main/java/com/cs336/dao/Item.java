@@ -15,7 +15,7 @@ public class Item {
     private Timestamp closingTime;
     private String status; // To track the status of the item, such as active, sold, etc.
     private String[] features;
-    private String[] featureVaklues;
+    private String[] featureValues;
 
     // Constructor for basic item creation
     public Item(String title, double startingPrice, Timestamp closingTime) {
