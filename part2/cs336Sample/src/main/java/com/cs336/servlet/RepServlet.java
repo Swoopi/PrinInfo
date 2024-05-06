@@ -121,6 +121,28 @@ public class RepServlet extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
+    private void deleteBid(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        int bid_id = Integer.parseInt(request.getParameter("bid_id"));
+        String sql = "DELETE FROM bids WHERE bid_id = ?";
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bid_id);
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                // User deleted successfully
+                System.out.println("Bid deleted successfully");
+                response.sendRedirect("rep_dashboard.jsp");  // Redirect to the dashboard
+            } else {
+                // No record was deleted
+                System.out.println("Failed to delete user");
+                request.setAttribute("errorMessage", "Failed to delete user.");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Database error while deleting user: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
 
 
 
