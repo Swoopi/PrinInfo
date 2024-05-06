@@ -16,7 +16,7 @@ public class GeneratingReport {
     }
 
     public double getTotalEarnings() throws SQLException {
-        String query = "SELECT SUM(sale_price) AS total_earnings FROM sales";
+        String query = "SELECT SUM(current_bid) AS total_earnings FROM items WHERE status = 'sold'";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
@@ -28,10 +28,11 @@ public class GeneratingReport {
     }
 
 
+
  // Method to fetch earnings per item
     public List<String> getEarningsPerItem() throws SQLException {
         List<String> results = new ArrayList<>();
-        String query = "SELECT items.title, SUM(sales.sale_price) AS earnings FROM sales JOIN items ON sales.item_id = items.item_id GROUP BY items.item_id";
+        String query = "SELECT title, current_bid AS earnings FROM items WHERE status = 'sold'";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
@@ -42,6 +43,7 @@ public class GeneratingReport {
         }
         return results;
     }
+
 
 
     public List<String> getEarningsPerItemType() throws SQLException {
@@ -59,10 +61,10 @@ public class GeneratingReport {
 
     public List<String> getEarningsPerUser() throws SQLException {
         List<String> users = new ArrayList<>();
+        String query = "SELECT u.username, SUM(i.current_bid) AS total_spent FROM items i JOIN users u ON i.current_bid_user_id = u.userid WHERE i.status = 'sold' GROUP BY i.current_bid_user_id";
         try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(
-                 "SELECT username, SUM(sale_price) AS total_spent FROM sales JOIN users ON sales.buyer_id = users.userid GROUP BY buyer_id")) {
-            ResultSet rs = ps.executeQuery();
+             PreparedStatement ps = con.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 users.add(rs.getString("username") + " - Total Spent: $" + rs.getDouble("total_spent"));
             }
@@ -71,12 +73,13 @@ public class GeneratingReport {
     }
 
 
+
     public List<String> getBestBuyers() throws SQLException {
         List<String> buyers = new ArrayList<>();
+        String query = "SELECT u.username, SUM(i.current_bid) AS total_spent FROM items i JOIN users u ON i.current_bid_user_id = u.userid WHERE i.status = 'sold' GROUP BY i.current_bid_user_id ORDER BY total_spent DESC LIMIT 10";
         try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(
-                 "SELECT username, SUM(sale_price) AS total_spent FROM sales JOIN users ON sales.buyer_id = users.userid GROUP BY buyer_id ORDER BY total_spent DESC LIMIT 10")) {
-            ResultSet rs = ps.executeQuery();
+             PreparedStatement ps = con.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 buyers.add(rs.getString("username") + " - Total Spent: $" + rs.getDouble("total_spent"));
             }
@@ -84,9 +87,10 @@ public class GeneratingReport {
         return buyers;
     }
 
+
     public List<String> getBestSellingItems() throws SQLException {
         List<String> results = new ArrayList<>();
-        String query = "SELECT items.title, COUNT(*) AS number_sold, SUM(sales.sale_price) AS total_earnings FROM sales JOIN items ON sales.item_id = items.item_id GROUP BY items.item_id ORDER BY number_sold DESC, total_earnings DESC LIMIT 10";
+        String query = "SELECT title, COUNT(*) AS number_sold, SUM(current_bid) AS total_earnings FROM items WHERE status = 'sold' GROUP BY item_id ORDER BY number_sold DESC, total_earnings DESC LIMIT 10";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
@@ -97,4 +101,5 @@ public class GeneratingReport {
         }
         return results;
     }
+
 }
