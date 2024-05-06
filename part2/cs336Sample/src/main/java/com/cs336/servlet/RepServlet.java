@@ -39,6 +39,9 @@ public class RepServlet extends HttpServlet {
                 case "removeAuctions":
                     removeAuctions(request, response);
                     break;
+                case "updateUser":
+                	updateUser(request, response);
+                	break;
                 default:
                     response.sendRedirect("rep_dashboard.jsp");
                     break;
@@ -69,6 +72,32 @@ public class RepServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
     }
+    private void updateUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        int userId = Integer.parseInt(request.getParameter("userid"));
+        String username = request.getParameter("username");
+        String role = request.getParameter("role");
+        
+        String sql = "UPDATE users SET username = ?, role = ? WHERE userid = ?";
+        
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, role);
+            ps.setInt(3, userId);
+            
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                response.sendRedirect("rep_dashboard.jsp"); // Redirect to dashboard or user list page after successful update
+            } else {
+                request.setAttribute("errorMessage", "Failed to update user.");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Database error while updating user: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+
     
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
         int userId = Integer.parseInt(request.getParameter("userid"));
