@@ -24,8 +24,14 @@ public class RepServlet extends HttpServlet {
                 case "manageQueries":
                     manageQueries(request, response);
                     break;
-                case "editUsers":
-                    editUsers(request, response);
+                case "listUsers":
+                    listUsers(request, response);
+                    break;
+                case "editUser":
+                    editUser(request, response);
+                    break;
+                case "deleteUser":
+                    deleteUser(request, response);
                     break;
                 case "manageBids":
                     manageBids(request, response);
@@ -43,6 +49,54 @@ public class RepServlet extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
+
+    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT userid, username, role FROM users";
+        try (Connection con = db.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User user = new User(
+                    rs.getInt("userid"),
+                    rs.getString("username"),
+                    rs.getString("role")
+                );
+                users.add(user);
+            }
+            request.setAttribute("users", users);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("editUsers.jsp");
+            dispatcher.forward(request, response);
+        }
+    }
+    
+    private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        int userId = Integer.parseInt(request.getParameter("userid"));
+        String sql = "DELETE FROM users WHERE userid = ?";
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                // User deleted successfully
+                System.out.println("User deleted successfully");
+                response.sendRedirect("rep_dashboard.jsp");  // Redirect to the dashboard
+            } else {
+                // No record was deleted
+                System.out.println("Failed to delete user");
+                request.setAttribute("errorMessage", "Failed to delete user.");
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Database error while deleting user: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+
+
+
+
+
 
     private void manageQueries(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
         List<Query> queries = new ArrayList<>();
@@ -66,25 +120,25 @@ public class RepServlet extends HttpServlet {
         }
     }
 
-    private void editUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT userid, username, role FROM users";
-        try (Connection con = db.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                User user = new User(
-                    rs.getInt("userid"),
-                    rs.getString("username"),
-                    rs.getString("role")
-                );
-                users.add(user);
+    private void editUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+    	String userIdStr = request.getParameter("userid");
+    	int userId = Integer.parseInt(userIdStr);  // This line throws the exception if userIdStr is null
+        String sql = "SELECT * FROM users WHERE userid = ?";
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User user = new User(rs.getInt("userid"), rs.getString("username"), rs.getString("role"));
+                request.setAttribute("user", user);
+                RequestDispatcher dispatcher = request.getRequestDispatcher("editUserForm.jsp");
+                dispatcher.forward(request, response);
+            } else {
+                request.setAttribute("errorMessage", "User not found.");
+                response.sendRedirect("RepServlet?action=editUsers");
             }
-            request.setAttribute("users", users);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("editUsers.jsp");
-            dispatcher.forward(request, response);
         }
     }
+
 
     private void manageBids(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
         List<Bid> bids = new ArrayList<>();

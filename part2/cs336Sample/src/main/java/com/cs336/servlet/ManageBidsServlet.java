@@ -23,7 +23,7 @@ public class ManageBidsServlet extends HttpServlet {
             String selectQuery = "SELECT bid_id, item_id, user_id, bid_amount FROM bids";
             PreparedStatement selectStmt = con.prepareStatement(selectQuery);
             ResultSet rs = selectStmt.executeQuery();
-
+            
             // Forward bids data to the JSP page
             request.setAttribute("bidsResultSet", rs);
             request.getRequestDispatcher("manageBids.jsp").forward(request, response);

@@ -18,7 +18,7 @@
     <!-- Section for editing or deleting user accounts -->
     <h2>Edit/Delete User Accounts</h2>
     <form action="RepServlet" method="post">
-        <input type="hidden" name="action" value="editUsers">
+        <input type="hidden" name="action" value="listUsers">
         <input type="submit" value="Manage Users">
     </form>
 
