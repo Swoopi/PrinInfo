@@ -17,7 +17,8 @@ public class Item {
     private Timestamp startingTime; // To track when the auction starts.
     private Timestamp closingTime;
     private String status; // To track the status of the item, such as active, sold, etc.
-
+    private String itemType;
+    
     // Constructor for basic item creation
     public Item(String title, double startingPrice, Timestamp closingTime) {
         this.title = title;
@@ -25,19 +26,20 @@ public class Item {
         this.closingTime = closingTime;
     }
 
-    // Full constructor to initialize all fields including seller ID
-    public Item(int itemId, int sellerId, String title, String description, double startingPrice, double currentBid, int currentBidUserId, Timestamp startingTime, Timestamp closingTime, String status) {
-        this.itemId = itemId;
-        this.sellerId = sellerId;  // Initialize seller ID
-        this.title = title;
-        this.description = description;
-        this.startingPrice = startingPrice;
-        this.currentBid = currentBid;
-        this.currentBidUserId = currentBidUserId;
-        this.startingTime = startingTime;
-        this.closingTime = closingTime;
-        this.status = status;
-    }
+    public Item(int itemId, int sellerId, String title, String description, double startingPrice, double currentBid,
+            int currentBidUserId, Timestamp startingTime, Timestamp closingTime, String status, String itemType) {
+    	this.itemId = itemId;
+    	this.sellerId = sellerId;
+    	this.title = title;
+    	this.description = description;
+    	this.startingPrice = startingPrice;
+    	this.currentBid = currentBid;
+    	this.currentBidUserId = currentBidUserId;
+    	this.startingTime = startingTime;
+    	this.closingTime = closingTime;
+    	this.status = status;
+    	this.itemType = itemType;
+}
 
     // Getters and Setters
     public int getItemId() {

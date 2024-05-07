@@ -44,8 +44,7 @@ public class GeneratingReport {
         return results;
     }
 
-
-
+    //fix this method
     public List<String> getEarningsPerItemType() throws SQLException {
         List<String> types = new ArrayList<>();
         try (Connection con = db.getConnection();

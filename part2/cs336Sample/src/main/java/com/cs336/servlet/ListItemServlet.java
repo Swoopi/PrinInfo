@@ -13,8 +13,6 @@ import java.util.Date;
 
 @WebServlet("/ListItemServlet")
 public class ListItemServlet extends HttpServlet {
-
-	
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String title = request.getParameter("title");
@@ -22,25 +20,23 @@ public class ListItemServlet extends HttpServlet {
         double startingPrice = Double.parseDouble(request.getParameter("startingPrice"));
         double bidIncrement = Double.parseDouble(request.getParameter("bidIncrement"));
         double minimumPrice = Double.parseDouble(request.getParameter("minimumPrice"));
+        String itemType = request.getParameter("itemType");  // Retrieve the item type from the form
 
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");  // Fixed to 24-hour format
         Timestamp closingTime = null;
-
         try {
             Date parsedDate = dateFormat.parse(request.getParameter("closingTime"));
             closingTime = new Timestamp(parsedDate.getTime());
-
         } catch (ParseException e) {
-            request.setAttribute("errorMessage", "Error parsing the closing time. Please use the correct format, including AM or PM.");
+            request.setAttribute("errorMessage", "Error parsing the closing time. Please use the correct format.");
             request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
             return;
         }
 
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
-            String query = "INSERT INTO Items (seller_id, title, description, starting_price, bid_increment, minimum_price, closing_time, status, starting_time) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', NOW())";
+            String query = "INSERT INTO items (seller_id, title, description, starting_price, bid_increment, minimum_price, closing_time, status, starting_time, item_type) "
+                         + "VALUES (?, ?, ?, ?, ?, ?, ?, 'active', NOW(), ?)";  // Adjusted SQL query to include item_type
             PreparedStatement ps = con.prepareStatement(query);
 
             HttpSession session = request.getSession();
@@ -57,6 +53,7 @@ public class ListItemServlet extends HttpServlet {
             ps.setDouble(5, bidIncrement);
             ps.setDouble(6, minimumPrice);
             ps.setTimestamp(7, closingTime);
+            ps.setString(8, itemType);  // Set the item type in the query
             ps.executeUpdate();
 
             response.sendRedirect("CurrentItemsServlet");
@@ -65,3 +62,4 @@ public class ListItemServlet extends HttpServlet {
         }
     }
 }
+

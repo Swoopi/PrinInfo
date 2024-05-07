@@ -27,24 +27,19 @@ public class LoginServlet extends HttpServlet {
 
         ApplicationDB db = new ApplicationDB();
         try (Connection con = db.getConnection()) {
-            // Include role in the SELECT query
-            PreparedStatement ps = con.prepareStatement(
-                    "SELECT userid, password, role FROM users WHERE username=?");
+            PreparedStatement ps = con.prepareStatement("SELECT userid, password, role FROM users WHERE username=?");
             ps.setString(1, username);
-
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                String role = rs.getString("role");  // Make sure this matches the database column name exactly
+                String role = rs.getString("role");
                 int userId = rs.getInt("userid");
-                
+
                 if (password.equals(storedPassword)) {
                     HttpSession session = request.getSession();
-                    session.setAttribute("userid", userId);
-                    session.setAttribute("username", username);
-                    session.setAttribute("role", role);
-                    
-                    // Redirect based on role
+                    SessionManager.logInUser(session, username, userId);
+                    session.setAttribute("role", role); // Continue to set role as you were before
+
                     switch (role) {
                         case "admin":
                             response.sendRedirect("admin_dashboard.jsp");
@@ -57,14 +52,10 @@ public class LoginServlet extends HttpServlet {
                             break;
                     }
                 } else {
-                    out.println("Invalid username or password");
-                    // Using forward to keep the user on the login page with an error message
                     request.setAttribute("errorMessage", "Invalid username or password");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                 }
             } else {
-                out.println("Username does not exist");
-                // Using forward to keep the user on the login page with an error message
                 request.setAttribute("errorMessage", "Username does not exist");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
@@ -76,4 +67,3 @@ public class LoginServlet extends HttpServlet {
         }
     }
 }
-

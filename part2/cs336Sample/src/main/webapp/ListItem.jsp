@@ -12,8 +12,10 @@
         Starting Price: <input type="number" name="startingPrice" step="0.01" required><br>
         Bid Increment: <input type="number" name="bidIncrement" step="0.01" required><br>
         Minimum Price: <input type="number" name="minimumPrice" step="0.01" required><br>
+        Item Type: <input type="text" name="itemType" required><br>  <!-- New field for item type -->
         Closing Time: <input type="datetime-local" name="closingTime" required><br>
         <input type="submit" value="List Item">
     </form>
 </body>
 </html>
+
