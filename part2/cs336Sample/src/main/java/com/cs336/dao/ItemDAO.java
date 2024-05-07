@@ -14,8 +14,7 @@ public class ItemDAO {
 
     public List<Item> getActiveItems() {
         List<Item> items = new ArrayList<>();
-        // Updated query to include item_type and filter by status
-        String query = "SELECT item_id, seller_id, title, description, starting_price, current_bid, current_bid_user_id, starting_time, closing_time, status, item_type FROM Items WHERE closing_time > NOW() AND status = 'active'";
+        String query = "SELECT item_id, seller_id, title, description, starting_price, current_bid, current_bid_user_id, bid_increment, starting_time, closing_time, status, item_type FROM Items WHERE closing_time > NOW() AND status = 'active'";
         try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Item item = new Item(
@@ -29,8 +28,9 @@ public class ItemDAO {
                     rs.getTimestamp("starting_time"),
                     rs.getTimestamp("closing_time"),
                     rs.getString("status"),
-                    rs.getString("item_type")  // Assuming you have a constructor or setter for item_type
+                    rs.getString("item_type")
                 );
+                item.setBidIncrement(rs.getDouble("bid_increment"));  // This line is crucial
                 items.add(item);
             }
         } catch (SQLException e) {
@@ -38,6 +38,7 @@ public class ItemDAO {
         }
         return items;
     }
+
 
     public void checkAndCloseBids() {
         Connection con = null;

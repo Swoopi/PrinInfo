@@ -5,20 +5,21 @@ import com.cs336.dao.ApplicationDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 public class Item {
     private int itemId;
-    private int sellerId;  // Seller ID field
+    private int sellerId;
     private String title;
-    private String description; // To store a detailed description of the item.
+    private String description;
     private double startingPrice;
-    private double bidIncrement;  
+    private double bidIncrement;
     private double currentBid;
     private int currentBidUserId;
-    private Timestamp startingTime; // To track when the auction starts.
+    private Timestamp startingTime;
     private Timestamp closingTime;
-    private String status; // To track the status of the item, such as active, sold, etc.
-    private String itemType;
-    
+    private String status;
+    private String itemType;  // Field to store the type of item.
+
     // Constructor for basic item creation
     public Item(String title, double startingPrice, Timestamp closingTime) {
         this.title = title;
@@ -26,20 +27,21 @@ public class Item {
         this.closingTime = closingTime;
     }
 
+    // Full constructor including all fields
     public Item(int itemId, int sellerId, String title, String description, double startingPrice, double currentBid,
             int currentBidUserId, Timestamp startingTime, Timestamp closingTime, String status, String itemType) {
-    	this.itemId = itemId;
-    	this.sellerId = sellerId;
-    	this.title = title;
-    	this.description = description;
-    	this.startingPrice = startingPrice;
-    	this.currentBid = currentBid;
-    	this.currentBidUserId = currentBidUserId;
-    	this.startingTime = startingTime;
-    	this.closingTime = closingTime;
-    	this.status = status;
-    	this.itemType = itemType;
-}
+        this.itemId = itemId;
+        this.sellerId = sellerId;
+        this.title = title;
+        this.description = description;
+        this.startingPrice = startingPrice;
+        this.currentBid = currentBid;
+        this.currentBidUserId = currentBidUserId;
+        this.startingTime = startingTime;
+        this.closingTime = closingTime;
+        this.status = status;
+        this.itemType = itemType;
+    }
 
     // Getters and Setters
     public int getItemId() {
@@ -50,11 +52,11 @@ public class Item {
         this.itemId = itemId;
     }
 
-    public int getSellerId() {  // Getter for seller ID
+    public int getSellerId() {
         return sellerId;
     }
 
-    public void setSellerId(int sellerId) {  // Setter for seller ID
+    public void setSellerId(int sellerId) {
         this.sellerId = sellerId;
     }
 
@@ -121,6 +123,7 @@ public class Item {
     public void setStatus(String status) {
         this.status = status;
     }
+
     public double getBidIncrement() {
         return bidIncrement;
     }
@@ -128,6 +131,15 @@ public class Item {
     public void setBidIncrement(double bidIncrement) {
         this.bidIncrement = bidIncrement;
     }
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
     public static void removeAuction(int itemId) throws SQLException {
         String sql = "UPDATE items SET status = 'removed' WHERE item_id = ?";
         try (Connection con = new ApplicationDB().getConnection();

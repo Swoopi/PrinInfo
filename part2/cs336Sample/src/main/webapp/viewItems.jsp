@@ -6,7 +6,6 @@
     <title>View Items</title>
     <script type="text/javascript">
         window.onload = function() {
-            // Display messages from the session if available
             var message = '<%=session.getAttribute("message")%>';
             var error = '<%=session.getAttribute("error")%>';
             if (message && message !== 'null') {
@@ -25,11 +24,14 @@
         List<Item> items = (List<Item>)request.getAttribute("items");
         if (items != null && !items.isEmpty()) {
             for (Item item : items) {
-    %>
+
+    %>			
                 <p>
-                    <%= item.getTitle() %> - Current bid: $<%= item.getCurrentBid() %> 
-                    - Starting Price: $<%= item.getStartingPrice() %> 
+                    <%= item.getTitle() %> - Current bid: $<%= item.getCurrentBid() %>
+                    - Starting Price: $<%= item.getStartingPrice() %>
                     - Closes on: <%= item.getClosingTime() %>
+                    - Bid Increment: $<%= item.getBidIncrement() %>
+                    - Type: <%= item.getItemType() %>
                 </p>
                 <!-- Updated form action to submit to PlaceBidServlet -->
                 <form action="PlaceBidServlet" method="post">
@@ -48,4 +50,3 @@
     %>
 </body>
 </html>
-
