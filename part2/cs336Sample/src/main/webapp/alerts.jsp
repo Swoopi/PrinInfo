@@ -17,7 +17,7 @@
             List<Alert> alerts = alertDAO.getAlertsForUser(userId);
             if (alerts != null && !alerts.isEmpty()) {
                 for (Alert alert : alerts) {
-                    out.println("<p>" + alert.getMessage() + "</p>");
+                    out.println("<p>" + "ItemID: " + alert.getRelatedItemId() + ",  "+ alert.getMessage() + " Time: " + alert.getCreatedAt() + "</p>");
                 }
             } else {
                 out.println("<p>No new alerts.</p>");

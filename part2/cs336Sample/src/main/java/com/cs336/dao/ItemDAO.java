@@ -42,30 +42,57 @@ public class ItemDAO {
 
     public void checkAndCloseBids() {
         Connection con = null;
-        PreparedStatement updateStmt = null;
+        PreparedStatement ps = null, updateStmt = null;
+        ResultSet rs = null;
+        AlertDAO alertDAO = new AlertDAO();
+
         try {
             con = db.getConnection();
             con.setAutoCommit(false); // Start transaction for batch update
 
-            // First, update all items that have met or exceeded the minimum price and are past the closing time
-            String updateSoldQuery = "UPDATE items SET status = 'sold' WHERE closing_time <= NOW() AND status = 'active' AND current_bid >= minimum_price";
-            updateStmt = con.prepareStatement(updateSoldQuery);
-            int soldUpdated = updateStmt.executeUpdate();
+            // Fetch all active items that are past their closing time
+            String fetchItemsQuery = "SELECT item_id, seller_id, current_bid, minimum_price, current_bid_user_id FROM items WHERE closing_time <= NOW() AND status = 'active'";
+            ps = con.prepareStatement(fetchItemsQuery);
+            rs = ps.executeQuery();
 
-            // Now, update all items where the current bid is below the minimum price and are past the closing time
-            String updateRemovedQuery = "UPDATE items SET status = 'removed' WHERE closing_time <= NOW() AND status = 'active' AND current_bid < minimum_price";
-            updateStmt = con.prepareStatement(updateRemovedQuery);
-            int removedUpdated = updateStmt.executeUpdate();
+            while (rs.next()) {
+                int itemId = rs.getInt("item_id");
+                double currentBid = rs.getDouble("current_bid");
+                double minimumPrice = rs.getDouble("minimum_price");
+                int currentBidUserId = rs.getInt("current_bid_user_id");
+                int sellerId = rs.getInt("seller_id");
+                System.out.println(currentBid + "CB  MP " + minimumPrice);
+                if (currentBid >= minimumPrice) {
+                    // Item sold
+                    String updateSoldQuery = "UPDATE items SET status = 'sold' WHERE item_id = ?";
+                    updateStmt = con.prepareStatement(updateSoldQuery);
+                    updateStmt.setInt(1, itemId);
+                    updateStmt.executeUpdate();
 
-            con.commit(); // Commit all changes if both operations were successful
+                    // Alert the winner
+                    if (currentBidUserId != 0) {
+                        alertDAO.createAlert(currentBidUserId, "Congratulations! You have won the auction for item ID: " + itemId, itemId, "win_notification");
+                    }
+                } else {
+                    // Reserve not met, item removed
+                    String updateRemovedQuery = "UPDATE items SET status = 'removed' WHERE item_id = ?";
+                    updateStmt = con.prepareStatement(updateRemovedQuery);
+                    updateStmt.setInt(1, itemId);
+                    updateStmt.executeUpdate();
 
-            System.out.println("Updated " + soldUpdated + " item(s) to 'sold' status.");
-            System.out.println("Updated " + removedUpdated + " item(s) to 'removed' status.");
+                    // Alert the seller that the reserve was not met
+                    alertDAO.createAlert(sellerId, "The auction closed, but the reserve price was not met for item ID: " + itemId, itemId, "item_removed");
+                }
+            }
+
+            con.commit(); // Commit all changes
+            System.out.println("Transactions committed successfully.");
         } catch (SQLException e) {
             System.out.println("SQL Exception: " + e.getMessage());
             try {
                 if (con != null) {
                     con.rollback(); // Rollback transaction if any error occurs
+                    System.out.println("Transaction rolled back.");
                 }
             } catch (SQLException ex) {
                 System.out.println("SQL Exception on rollback: " + ex.getMessage());
@@ -74,6 +101,8 @@ public class ItemDAO {
         } finally {
             try {
                 if (updateStmt != null) updateStmt.close();
+                if (ps != null) ps.close();
+                if (rs != null) rs.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
                 System.out.println("SQL Exception during resource cleanup: " + e.getMessage());
@@ -81,7 +110,7 @@ public class ItemDAO {
         }
     }
 
-    
+
 
     public List<Item> getItemsByUserId(int userId) {
     	System.out.println("Querying items for user ID: " + userId);
@@ -103,17 +132,19 @@ public class ItemDAO {
         }
         return items;
     }
-    public boolean updateBid(int itemId, int userId, double bidAmount) {
+    public int updateBid(int itemId, int userId, double bidAmount) {
         Connection con = null;
         PreparedStatement ps = null;
         PreparedStatement updatePs = null;
         ResultSet rs = null;
+        int previousBidderId = -1;
+
         try {
             con = db.getConnection();
             con.setAutoCommit(false); // Start transaction
 
-            // Fetch the current bid and bid increment
-            String query = "SELECT current_bid, bid_increment FROM items WHERE item_id = ? AND status = 'active'";
+            // Prepare a query to fetch the current bid and bid increment
+            String query = "SELECT current_bid, bid_increment, current_bid_user_id FROM items WHERE item_id = ? AND status = 'active'";
             ps = con.prepareStatement(query);
             ps.setInt(1, itemId);
             rs = ps.executeQuery();
@@ -121,12 +152,10 @@ public class ItemDAO {
             if (rs.next()) {
                 double currentBid = rs.getDouble("current_bid");
                 double bidIncrement = rs.getDouble("bid_increment");
+                previousBidderId = rs.getInt("current_bid_user_id");  // Get the ID of the current highest bidder
 
-                System.out.println("Current Bid: " + currentBid + ", Bid Increment: " + bidIncrement + ", New Bid: " + bidAmount);
-                
-                // Check if the new bid is at least current bid plus bid increment
                 if (bidAmount >= (currentBid + bidIncrement)) {
-                	String updateQuery = "UPDATE items SET current_bid = ?, current_bid_user_id = ? WHERE item_id = ?";
+                    String updateQuery = "UPDATE items SET current_bid = ?, current_bid_user_id = ? WHERE item_id = ?";
                     updatePs = con.prepareStatement(updateQuery);
                     updatePs.setDouble(1, bidAmount);
                     updatePs.setInt(2, userId);
@@ -134,39 +163,51 @@ public class ItemDAO {
                     int affectedRows = updatePs.executeUpdate();
 
                     if (affectedRows > 0) {
-                        con.commit(); // Commit transaction
-                        System.out.println("Bid update successful.");
-                        return true;
-                    } else {
-                        System.out.println("No rows updated, bid not high enough or condition failed.");
+                    	AlertDAO alertDAO = new AlertDAO();
+                    	String message = "You have been outbit on item ID:  " + itemId;
                     }
-                } else {
-                    System.out.println("New bid is not sufficient to update (less than current bid + increment).");
+                    con.commit();  // Commit the transaction
+                    return previousBidderId;  // Return the previous bidder's ID
                 }
-            } else {
-                System.out.println("No item found with the given ID that is active.");
+                
+                con.rollback();  
             }
-            con.rollback(); // Rollback transaction if bid not higher or no rows affected
-            return false;
         } catch (SQLException e) {
             System.out.println("SQL Exception: " + e.getMessage());
             try {
-                if (con != null) con.rollback();
+                con.rollback();  // Rollback transaction if there's an error
             } catch (SQLException ex) {
                 System.out.println("SQL Exception on rollback: " + ex.getMessage());
             }
-            return false;
+            e.printStackTrace();
         } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (updatePs != null) updatePs.close();
-                if (con != null) con.close();
-            } catch (SQLException e) {
-                System.out.println("SQL Exception during resource cleanup: " + e.getMessage());
+            closeResources(con, rs, ps, updatePs);  // Properly close all resources
+        }
+        return -1;  // Return -1 to indicate failure or no previous bidder
+    }
+
+
+    private void closeResources(Connection con, ResultSet rs, Statement... statements) {
+        try {
+            if (rs != null) {
+                rs.close();
             }
+            if (statements != null) {
+                for (Statement stmt : statements) {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                }
+            }
+            if (con != null) {
+                con.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception during resource cleanup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
 
 }

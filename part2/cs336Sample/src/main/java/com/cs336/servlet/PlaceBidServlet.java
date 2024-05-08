@@ -7,6 +7,8 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.*;
 import com.cs336.dao.ItemDAO;
+import com.cs336.dao.AlertDAO;
+
 @WebServlet("/PlaceBidServlet")
 public class PlaceBidServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -21,18 +23,17 @@ public class PlaceBidServlet extends HttpServlet {
         }
 
         ItemDAO itemDAO = new ItemDAO();
+        AlertDAO alertDAO = new AlertDAO();
+        
         try {
-            boolean isUpdated = itemDAO.updateBid(itemId, userId, bidAmount);
-            if (isUpdated) {
-                response.sendRedirect("ViewItemsServlet");
-            } else {
-            	System.out.println("HERE 1");
-
-                request.setAttribute("errorMessage", "Bid too low or unable to place bid.");
-                request.getRequestDispatcher("errorPage.jsp").forward(request, response);
+            int previousBidderId = itemDAO.updateBid(itemId, userId, bidAmount);
+            if (previousBidderId > 0 && previousBidderId != userId) {
+                // Create an alert for the previous highest bidder
+                String message = "You have been outbid on item #" + itemId;
+                alertDAO.createAlert(previousBidderId, message, itemId, "bid_update");
             }
+            response.sendRedirect("ViewItemsServlet");
         } catch (Exception e) {
-        	System.out.println("HERE 2");
             e.printStackTrace();  // Log the exception
             request.setAttribute("errorMessage", "Database error: " + e.getMessage());
             request.getRequestDispatcher("errorPage.jsp").forward(request, response);
