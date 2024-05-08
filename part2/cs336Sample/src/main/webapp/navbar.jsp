@@ -11,7 +11,6 @@
         <li><a href="alerts.jsp">Alerts</a></li>
         <li><a href="bids.jsp">Bids</a></li>
         <li><a href="search.jsp">Search</a></li>
-        <li><a href="categories.jsp">Categories</a></li>
         <li><a href="support.jsp">Support</a></li>
         
     </ul>

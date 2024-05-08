@@ -19,7 +19,7 @@ public class ManageBidsServlet extends HttpServlet {
 
         List<Bid> bids = new ArrayList<>();
         try (Connection con = new ApplicationDB().getConnection()) {
-            String selectQuery = "SELECT bid_id, item_id, user_id, bid_amount FROM bids";
+            String selectQuery = "SELECT bid_id, item_id, user_id, bid_type, bid_amount, auto_increment, auto_limit, bid_time FROM bids";
             try (PreparedStatement selectStmt = con.prepareStatement(selectQuery);
                  ResultSet rs = selectStmt.executeQuery()) {
                 while (rs.next()) {
@@ -27,8 +27,14 @@ public class ManageBidsServlet extends HttpServlet {
                         rs.getInt("bid_id"),
                         rs.getInt("item_id"),
                         rs.getInt("user_id"),
-                        rs.getDouble("bid_amount")
+                        rs.getString("bid_type"),
+                        rs.getDouble("bid_amount"),
+                        rs.getDouble("auto_increment"),
+                        rs.getDouble("auto_limit"),
+                        rs.getTimestamp("bid_time")
+                       
                     ));
+                    
                 }
             }
             request.setAttribute("bids", bids);

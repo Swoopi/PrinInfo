@@ -1,46 +1,41 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.cs336.dao.Bid" %>
 <!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Edit Bids</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Manage Bids</title>
 </head>
 <body>
-    <h1>Edit/Delete Bids</h1>
-    <form action="ManageBidsServlet" method="post">
-        <table border="1">
-            <tr>
-                <th>Select</th>
-                <th>Bid ID</th>
-                <th>Item ID</th>
-                <th>User ID</th>
-                <th>Bid amount</th>
-            </tr>
-            <%
+    <h1>Manage Bids</h1>
+    <table border="1">
+        <tr>
+            <th>Bid ID</th>
+            <th>Item ID</th>
+            <th>User ID</th>
+            <th>Bid Type</th>
+            <th>Bid Amount</th>
+            <th>Auto Increment</th>
+            <th>Auto Limit</th>
+            <th>Bid Time</th>
+        </tr>
+        <%
             List<Bid> bids = (List<Bid>) request.getAttribute("bids");
-            if (bids == null || bids.isEmpty()) {
-                %>
-                <tr><td colspan="5">No bids found</td></tr>
-                <%
-            } else {
-                for (Bid bid : bids) {
-                    %>
-                    <tr>
-                        <td><input type="checkbox" name="selectedBids" value="<%= bid.getBidId() %>"></td>
-                        <td><%= bid.getBidId() %></td>
-                        <td><%= bid.getItemId() %></td>
-                        <td><%= bid.getUserId() %></td>
-                        <td><%= bid.getBidAmount() %></td>
-                    </tr>
-                    <%
-                }
+            for (Bid bid : bids) {
+        %>
+        <tr>
+            <td><%= bid.getBidId() %></td>
+            <td><%= bid.getItemId() %></td>
+            <td><%= bid.getUserId() %></td>
+            <td><%= bid.getBidType() %></td>
+            <td><%= bid.getBidAmount() %></td>
+            <td><%= bid.getAutoIncrement() %></td>
+            <td><%= bid.getAutoLimit() %></td>
+            <td><%= bid.getBidTime() %></td>
+        </tr>
+        <%
             }
-            %>
-        </table>
-        <input type="hidden" name="action" value="deleteBids">
-        <input type="submit" value="Delete Selected Bids">
-    </form>
-    <a href="rep_dashboard.jsp">Back to Dashboard</a>
+        %>
+    </table>
 </body>
 </html>

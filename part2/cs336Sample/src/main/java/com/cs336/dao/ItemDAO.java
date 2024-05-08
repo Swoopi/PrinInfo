@@ -4,6 +4,7 @@ import com.cs336.dao.Item;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.cs336.dao.Bid;
 
 public class ItemDAO {
     private ApplicationDB db;
@@ -38,77 +39,138 @@ public class ItemDAO {
         }
         return items;
     }
+    public List<Item> searchItems(String query, String sortBy, String sortOrder) throws SQLException {
+        List<Item> items = new ArrayList<>();
+        // Build SQL query string with dynamic sorting
+        String sql = "SELECT * FROM items WHERE (title LIKE ? OR description LIKE ? OR item_type LIKE ?) AND closing_time > NOW() AND status = 'active' ORDER BY " + sortBy + " " + sortOrder;
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + query + "%");
+            ps.setString(2, "%" + query + "%");
+            ps.setString(3, "%" + query + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Item item = new Item(
+                        rs.getInt("item_id"),
+                        rs.getInt("seller_id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getDouble("starting_price"),
+                        rs.getDouble("current_bid"),
+                        rs.getInt("current_bid_user_id"),
+                        rs.getTimestamp("starting_time"),
+                        rs.getTimestamp("closing_time"),
+                        rs.getString("status"),
+                        rs.getString("item_type")
+                    );
+                    item.setBidIncrement(rs.getDouble("bid_increment"));
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
+    }
+
+    public List<Bid> getBidHistory(int itemId) throws SQLException {
+        List<Bid> bidHistory = new ArrayList<>();
+        String sql = "SELECT * FROM bids WHERE item_id = ? ORDER BY bid_time DESC";
+        try (Connection con = db.getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, itemId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Bid bid = new Bid(
+                        rs.getInt("bid_id"),
+                        rs.getInt("item_id"),
+                        rs.getInt("user_id"),
+                        rs.getString("bid_type"),
+                        rs.getDouble("bid_amount"),
+                        rs.getDouble("auto_increment"),
+                        rs.getDouble("auto_limit"),
+                        rs.getTimestamp("bid_time")
+                    );
+                    bidHistory.add(bid);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bidHistory;
+    }
+
+
+    public List<Item> getUserAuctions(int userId) throws SQLException {
+        List<Item> auctions = new ArrayList<>();
+        String sql = "SELECT DISTINCT items.* FROM items JOIN bids ON items.item_id = bids.item_id WHERE bids.user_id = ? OR items.seller_id = ? ORDER BY items.closing_time DESC";
+        try (Connection con = db.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Item item = new Item(
+                        rs.getInt("item_id"),
+                        rs.getInt("seller_id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getDouble("starting_price"),
+                        rs.getDouble("current_bid"),
+                        rs.getInt("current_bid_user_id"),
+                        rs.getTimestamp("starting_time"),
+                        rs.getTimestamp("closing_time"),
+                        rs.getString("status"),
+                        rs.getString("item_type")
+                    );
+                    item.setBidIncrement(rs.getDouble("bid_increment"));
+                    auctions.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return auctions;
+    }
 
 
     public void checkAndCloseBids() {
-        Connection con = null;
-        PreparedStatement ps = null, updateStmt = null;
-        ResultSet rs = null;
-        AlertDAO alertDAO = new AlertDAO();
+        try (Connection con = db.getConnection()) {
+            con.setAutoCommit(false);
+            try (PreparedStatement ps = con.prepareStatement("SELECT item_id, seller_id, current_bid, minimum_price, current_bid_user_id FROM items WHERE closing_time <= NOW() AND status = 'active' FOR UPDATE")) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    int itemId = rs.getInt("item_id");
+                    double currentBid = rs.getDouble("current_bid");
+                    double minimumPrice = rs.getDouble("minimum_price");
+                    int sellerId = rs.getInt("seller_id");
+                    int currentBidUserId = rs.getInt("current_bid_user_id");
 
-        try {
-            con = db.getConnection();
-            con.setAutoCommit(false); // Start transaction for batch update
+                    System.out.println("Processing item: " + itemId + " | Current Bid: " + currentBid + " | Minimum Price: " + minimumPrice);
 
-            // Fetch all active items that are past their closing time
-            String fetchItemsQuery = "SELECT item_id, seller_id, current_bid, minimum_price, current_bid_user_id FROM items WHERE closing_time <= NOW() AND status = 'active'";
-            ps = con.prepareStatement(fetchItemsQuery);
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                int itemId = rs.getInt("item_id");
-                double currentBid = rs.getDouble("current_bid");
-                double minimumPrice = rs.getDouble("minimum_price");
-                int currentBidUserId = rs.getInt("current_bid_user_id");
-                int sellerId = rs.getInt("seller_id");
-                System.out.println(currentBid + "CB  MP " + minimumPrice);
-                if (currentBid >= minimumPrice) {
-                    // Item sold
-                    String updateSoldQuery = "UPDATE items SET status = 'sold' WHERE item_id = ?";
-                    updateStmt = con.prepareStatement(updateSoldQuery);
-                    updateStmt.setInt(1, itemId);
-                    updateStmt.executeUpdate();
-
-                    // Alert the winner
-                    if (currentBidUserId != 0) {
-                        alertDAO.createAlert(currentBidUserId, "Congratulations! You have won the auction for item ID: " + itemId, itemId, "win_notification");
+                    if (currentBid >= minimumPrice) {
+                        try (PreparedStatement updateStmt = con.prepareStatement("UPDATE items SET status = 'sold' WHERE item_id = ?")) {
+                            updateStmt.setInt(1, itemId);
+                            updateStmt.executeUpdate();
+                            new AlertDAO().createAlert(currentBidUserId, "Congratulations! You have won the auction for item ID: " + itemId, itemId, "win_notification");
+                        }
+                    } else {
+                        try (PreparedStatement updateStmt = con.prepareStatement("UPDATE items SET status = 'removed' WHERE item_id = ?")) {
+                            updateStmt.setInt(1, itemId);
+                            updateStmt.executeUpdate();
+                            new AlertDAO().createAlert(sellerId, "The auction closed, but the reserve price was not met for item ID: " + itemId, itemId, "item_removed");
+                        }
                     }
-                } else {
-                    // Reserve not met, item removed
-                    String updateRemovedQuery = "UPDATE items SET status = 'removed' WHERE item_id = ?";
-                    updateStmt = con.prepareStatement(updateRemovedQuery);
-                    updateStmt.setInt(1, itemId);
-                    updateStmt.executeUpdate();
-
-                    // Alert the seller that the reserve was not met
-                    alertDAO.createAlert(sellerId, "The auction closed, but the reserve price was not met for item ID: " + itemId, itemId, "item_removed");
                 }
-            }
-
-            con.commit(); // Commit all changes
-            System.out.println("Transactions committed successfully.");
-        } catch (SQLException e) {
-            System.out.println("SQL Exception: " + e.getMessage());
-            try {
-                if (con != null) {
-                    con.rollback(); // Rollback transaction if any error occurs
-                    System.out.println("Transaction rolled back.");
-                }
-            } catch (SQLException ex) {
-                System.out.println("SQL Exception on rollback: " + ex.getMessage());
-            }
-            e.printStackTrace();
-        } finally {
-            try {
-                if (updateStmt != null) updateStmt.close();
-                if (ps != null) ps.close();
-                if (rs != null) rs.close();
-                if (con != null) con.close();
+                con.commit();
             } catch (SQLException e) {
-                System.out.println("SQL Exception during resource cleanup: " + e.getMessage());
+                System.err.println("Failed to process items: " + e.getMessage());
+                con.rollback();
             }
+        } catch (SQLException e) {
+            System.err.println("Database connection issue: " + e.getMessage());
         }
     }
+
 
 
 
@@ -185,6 +247,33 @@ public class ItemDAO {
         }
         return -1;  // Return -1 to indicate failure or no previous bidder
     }
+    public List<Bid> getUserBids(int userId) throws SQLException {
+        List<Bid> bids = new ArrayList<>();
+        String sql = "SELECT * FROM bids WHERE user_id = ?";
+        try (Connection con = db.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Bid bid = new Bid(
+                        rs.getInt("bid_id"),
+                        rs.getInt("item_id"),
+                        userId,
+                        rs.getString("bid_type"),
+                        rs.getDouble("bid_amount"),
+                        rs.getDouble("auto_increment"),
+                        rs.getDouble("auto_limit"),
+                        rs.getTimestamp("bid_time")
+                    );
+                    bids.add(bid);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions or throw them to be caught by the calling servlet
+        }
+        return bids;
+    }
+
 
 
     private void closeResources(Connection con, ResultSet rs, Statement... statements) {

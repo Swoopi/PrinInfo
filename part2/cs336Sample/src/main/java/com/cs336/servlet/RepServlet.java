@@ -193,7 +193,7 @@ public class RepServlet extends HttpServlet {
 
     private void manageBids(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
         List<Bid> bids = new ArrayList<>();
-        String sql = "SELECT bid_id, item_id, user_id, bid_amount FROM bids ORDER BY bid_amount DESC";
+        String sql = "SELECT bid_id, item_id, user_id, bid_type, bid_amount, auto_increment, auto_limit, bid_time FROM bids ORDER BY bid_time DESC";
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -202,15 +202,23 @@ public class RepServlet extends HttpServlet {
                     rs.getInt("bid_id"),
                     rs.getInt("item_id"),
                     rs.getInt("user_id"),
-                    rs.getDouble("bid_amount")
+                    rs.getString("bid_type"),
+                    rs.getDouble("bid_amount"),
+                    rs.getDouble("auto_increment"),
+                    rs.getDouble("auto_limit"),
+                    rs.getTimestamp("bid_time")
                 );
                 bids.add(bid);
             }
             request.setAttribute("bids", bids);
             RequestDispatcher dispatcher = request.getRequestDispatcher("manageBids.jsp");
             dispatcher.forward(request, response);
+        } catch (SQLException e) {
+            request.getSession().setAttribute("error", "Database error while fetching bids: " + e.getMessage());
+            response.sendRedirect("errorPage.jsp");
         }
     }
+
 
     private void removeAuctions(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
     	    List<Item> items = new ArrayList<>();
@@ -229,8 +237,8 @@ public class RepServlet extends HttpServlet {
     	                    rs.getInt("current_bid_user_id"),
     	                    rs.getTimestamp("starting_time"),
     	                    rs.getTimestamp("closing_time"),
-    	                    rs.getString("status")
-    	                );
+    	                    rs.getString("status"),
+    	                    rs.getString("item_type")    	                );
     	            items.add(item);
     	        }
     	        request.setAttribute("items", items);

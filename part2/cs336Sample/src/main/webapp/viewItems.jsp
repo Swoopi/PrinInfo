@@ -16,6 +16,16 @@
                 <% session.removeAttribute("error"); %>
             }
         }
+
+        function toggleAutoBidFields(itemId) {
+            var bidTypeSelect = document.getElementById("bidType" + itemId);
+            var autoBidFields = document.getElementById("autoBidFields" + itemId);
+            if (bidTypeSelect.value === "AUTOMATIC") {
+                autoBidFields.style.display = 'block';
+            } else {
+                autoBidFields.style.display = 'none';
+            }
+        }
     </script>
 </head>
 <body>
@@ -24,8 +34,7 @@
         List<Item> items = (List<Item>)request.getAttribute("items");
         if (items != null && !items.isEmpty()) {
             for (Item item : items) {
-
-    %>			
+    %>          
                 <p>
                     <%= item.getTitle() %> - Current bid: $<%= item.getCurrentBid() %>
                     - Starting Price: $<%= item.getStartingPrice() %>
@@ -36,10 +45,17 @@
                 <!-- Updated form action to submit to PlaceBidServlet -->
                 <form action="PlaceBidServlet" method="post">
                     <input type="hidden" name="itemId" value="<%= item.getItemId() %>">
+                    <select name="bidType" id="bidType<%= item.getItemId() %>" onchange="toggleAutoBidFields(<%= item.getItemId() %>)">
+                        <option value="MANUAL">Manual Bid</option>
+                        <option value="AUTOMATIC">Automatic Bid</option>
+                    </select>
                     <input type="number" name="bidAmount" min="<%= item.getCurrentBid() + item.getBidIncrement() %>" step="0.01" required>
+                    <div id="autoBidFields<%= item.getItemId() %>" style="display: none;">
+                        <input type="number" name="incAmount" placeholder="Auto Increment ($)" step="0.01" min="0.01">
+                        <input type="number" name="autoLimit" placeholder="Auto Limit ($)" min="<%= item.getCurrentBid() + item.getBidIncrement() %>">
+                    </div>
                     <input type="submit" value="Place Bid">
                 </form>
-
     <%
             }
         } else {
